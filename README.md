@@ -1,37 +1,40 @@
-# Lista Tarefas - CRUD com Node.js, Express e MongoDB
+# Task Manager - CRUD with Node.js, Express and MongoDB
 
-Uma aplicação completa de lista Tarefas com operações CRUD (Create, Read, Update, Delete), construída com Node.js, Express e MongoDB, incluindo uma interface web responsiva.
+A complete task management application with CRUD operations (Create, Read, Update, Delete), built with Node.js, Express and MongoDB, including a responsive web interface.
 
-## Recursos
+## Features
 
-- API RESTful com Node.js e Express
-- Banco de dados MongoDB para armazenamento de dados
-- Interface web responsiva com Bootstrap 5
-- Operações CRUD completas (Criar, Ler, Atualizar, Excluir)
-- Busca de contatos pelo nome ou telefone
-- Docker para fácil instalação e execução
-- Design responsivo que funciona em dispositivos móveis e desktop
+- RESTful API with Node.js and Express
+- MongoDB database for data storage
+- Responsive web interface with Bootstrap 5
+- Complete CRUD operations (Create, Read, Update, Delete)
+- Search tasks by title or description
+- Task status tracking (pending, in progress, completed)
+- Priority levels (low, medium, high)
+- Due date management
+- Docker for easy installation and execution
+- Responsive design that works on mobile and desktop devices
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
-lista-telefonica/
+task-manager/
 ├── config/
-├── public/                   # Arquivos da interface web
+├── public/                   # Web interface files
 │   ├── css/
-│   │   └── styles.css        # Estilos customizados
+│   │   └── styles.css        # Custom styles
 │   ├── js/
-│   │   └── app.js            # JavaScript da aplicação
-│   └── index.html            # Página principal
+│   │   └── app.js            # Application JavaScript
+│   └── index.html            # Main page
 ├── src/
 │   ├── controllers/
-│   │   └── contactController.js
+│   │   └── taskController.js
 │   ├── models/
-│   │   └── contactModel.js
+│   │   └── taskModel.js
 │   ├── routes/
-│   │   └── contactRoutes.js
+│   │   └── taskRoutes.js
 │   ├── utils/
-│   │   └── seed.js           # Utilitário para popular o banco
+│   │   └── seed.js           # Database seeding utility
 │   └── server.js
 ├── .dockerignore
 ├── .env.example
@@ -41,118 +44,123 @@ lista-telefonica/
 └── README.md
 ```
 
-## Pré-requisitos
+## Prerequisites
 
-- Docker e Docker Compose
+- Docker and Docker Compose
 
-## Instalação e Execução
+## Installation and Execution
 
-1. Clone o repositório:
+1. Clone the repository:
    ```
-   git clone <url-do-repositorio>
-   cd lista-telefonica
+   git clone <repository-url>
+   cd task-manager
    ```
 
-2. Crie o arquivo .env baseado no .env.example:
+2. Create the .env file based on .env.example:
    ```
    cp .env.example .env
    ```
 
-3. Execute a aplicação com Docker Compose:
+3. Run the application with Docker Compose:
    ```
    docker-compose up
    ```
 
-   A aplicação estará disponível em: http://localhost:3000
+   The application will be available at: http://localhost:3000
 
-4. (Opcional) Popular o banco de dados com dados iniciais:
+4. (Optional) Seed the database with initial data:
    ```
    docker-compose exec app npm run seed
    ```
 
-## Interface Web
+## Web Interface
 
-A aplicação inclui uma interface web completa com:
+The application includes a complete web interface with:
 
-- Lista de contatos em formato de tabela
-- Formulário para adicionar novos contatos
-- Opções para editar e excluir contatos
-- Campo de busca para filtrar contatos
-- Mensagens de feedback para o usuário
-- Design responsivo (funciona em celulares e desktops)
+- Task list in table format
+- Form to add new tasks
+- Options to edit and delete tasks
+- Search field to filter tasks
+- Task status management
+- Priority level selection
+- Due date picker
+- User feedback messages
+- Responsive design (works on phones and desktops)
 
-## Endpoints da API
+## API Endpoints
 
-- `GET /api/tasks` - Listar todos os contatos
+- `GET /api/tasks` - List all tasks
   - Query Params:
-    - `search`: Buscar contatos por nome ou telefone
+    - `search`: Search tasks by title or description
 
-- `GET /api/tasks/:id` - Obter um contato específico
+- `GET /api/tasks/:id` - Get a specific task
 
-- `POST /api/tasks` - Criar um novo contato
+- `POST /api/tasks` - Create a new task
   - Body:
     ```json
     {
-      "name": "Nome Completo",
-      "phone": "31999999999",
-      "email": "email@example.com",
-      "address": "Rua Exemplo, 123",
-      "notes": "Observações sobre o contato"
+      "title": "Task Title",
+      "description": "Task Description",
+      "status": "pending",
+      "priority": "medium",
+      "dueDate": "2024-03-20",
+      "notes": "Additional notes about the task"
     }
     ```
 
-- `PUT /api/tasks/:id` - Atualizar um contato
+- `PUT /api/tasks/:id` - Update a task
 
-- `DELETE /api/tasks/:id` - Remover um contato
+- `DELETE /api/tasks/:id` - Remove a task
 
-## Exemplos de Uso da API
+## API Usage Examples
 
-### Criar um contato
+### Create a task
 
 ```bash
 curl -X POST http://localhost:3000/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "João Silva",
-    "phone": "31987654321",
-    "email": "joao@example.com",
-    "address": "Av. Brasil, 100",
-    "notes": "Contato de trabalho"
+    "title": "Complete Project Documentation",
+    "description": "Write comprehensive documentation for the new feature",
+    "status": "in_progress",
+    "priority": "high",
+    "dueDate": "2024-03-25",
+    "notes": "Include API examples"
   }'
 ```
 
-### Buscar contatos
+### Search tasks
 
 ```bash
-curl -X GET "http://localhost:3000/api/tasks?search=João"
+curl -X GET "http://localhost:3000/api/tasks?search=documentation"
 ```
 
-## Desenvolvimento
+## Development
 
-Para desenvolvimento sem Docker:
+For development without Docker:
 
-1. Instale as dependências:
+1. Install dependencies:
    ```
    npm install
    ```
 
-2. Execute o servidor em modo de desenvolvimento:
+2. Run the server in development mode:
    ```
    npm run dev
    ```
 
-3. Popular o banco de dados com dados iniciais:
+3. Seed the database with initial data:
    ```
    npm run seed
    ```
 
-## Tecnologias Utilizadas
+## Technologies Used
 
 - **Backend**: Node.js, Express.js, Mongoose
-- **Banco de dados**: MongoDB
+- **Database**: MongoDB
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Containerização**: Docker, Docker Compose
+- **Containerization**: Docker, Docker Compose
 
-## Licença
+## License
 
 MIT 

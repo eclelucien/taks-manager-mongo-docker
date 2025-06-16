@@ -1,28 +1,28 @@
 const mongoose = require('mongoose');
 
-const taskschema = new mongoose.Schema({
-  name: {
+const taskSchema = new mongoose.Schema({
+  title: {
     type: String,
-    required: [true, 'O nome é obrigatório'],
+    required: [true, 'O título é obrigatório'],
     trim: true
   },
-  phone: {
+  description: {
     type: String,
-    required: [true, 'O telefone é obrigatório'],
+    required: [true, 'A descrição é obrigatória'],
     trim: true
   },
-  email: {
+  status: {
     type: String,
-    trim: true,
-    lowercase: true,
-    match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      'Por favor, forneça um endereço de email válido'
-    ]
+    enum: ['pending', 'in_progress', 'completed'],
+    default: 'pending'
   },
-  address: {
+  priority: {
     type: String,
-    trim: true
+    enum: ['low', 'medium', 'high'],
+    default: 'medium'
+  },
+  dueDate: {
+    type: Date
   },
   notes: {
     type: String,
@@ -32,9 +32,9 @@ const taskschema = new mongoose.Schema({
   timestamps: true
 });
 
-// Criar um índice para facilitar a busca por nome ou telefone
-taskschema.index({ name: 'text', phone: 'text' });
+// Criar um índice para facilitar a busca por título ou descrição
+taskSchema.index({ title: 'text', description: 'text' });
 
-const Contact = mongoose.model('Contact', taskschema);
+const Task = mongoose.model('Task', taskSchema);
 
-module.exports = Contact; 
+module.exports = Task; 

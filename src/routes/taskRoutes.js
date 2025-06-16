@@ -1,17 +1,17 @@
 const express = require('express');
-const contactController = require('../controllers/contactController');
+const taskController = require('../controllers/taskController');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(contactController.getAllTasks)
-  .post(contactController.createContact);
+  .get(taskController.getAllTasks)
+  .post(taskController.createTask);
 
 router
   .route('/:id')
-  .get(contactController.getContact)
-  .put(contactController.updateContact)
-  .delete(contactController.deleteContact);
+  .get(taskController.getTask)
+  .put(taskController.updateTask)
+  .delete(taskController.deleteTask);
 
 module.exports = router; 

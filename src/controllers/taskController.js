@@ -1,4 +1,4 @@
-const Contact = require('../models/taskModel');
+const Task = require('../models/taskModel');
 
 // Get all tasks
 exports.getAllTasks = async (req, res) => {
@@ -6,12 +6,12 @@ exports.getAllTasks = async (req, res) => {
     const { search } = req.query;
     let query = {};
     
-    // Implementar busca se o parâmetro "search" for fornecido
+    // Implement search if "search" parameter is provided
     if (search) {
       query = { $text: { $search: search } };
     }
     
-    const tasks = await Contact.find(query).sort({ name: 1 });
+    const tasks = await Task.find(query).sort({ title: 1 });
     
     res.status(200).json({
       status: 'success',
@@ -26,31 +26,32 @@ exports.getAllTasks = async (req, res) => {
   }
 };
 
-// Get a single contact
+// Get a single task
 exports.getTask = async (req, res) => {
   try {
-    const contact = await Contact.findById(req.params.id);
+    const task = await Task.findById(req.params.id);
     
-    if (!contact) {
+    if (!task) {
       return res.status(404).json({
         status: 'error',
-        message: 'Contato não encontrado'
+        message: 'Task not found'
       });
     }
     
-    // Garantir que o objeto retornado tem a mesma estrutura
-    // esperada pelo frontend
+    // Ensure the returned object has the same structure
+    // expected by the frontend
     res.status(200).json({
       status: 'success',
       data: {
-        _id: contact._id,
-        name: contact.name,
-        phone: contact.phone,
-        email: contact.email,
-        address: contact.address,
-        notes: contact.notes,
-        createdAt: contact.createdAt,
-        updatedAt: contact.updatedAt
+        _id: task._id,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        dueDate: task.dueDate,
+        notes: task.notes,
+        createdAt: task.createdAt,
+        updatedAt: task.updatedAt
       }
     });
   } catch (error) {
@@ -61,14 +62,14 @@ exports.getTask = async (req, res) => {
   }
 };
 
-// Create a new contact
-exports.createContact = async (req, res) => {
+// Create a new task
+exports.createTask = async (req, res) => {
   try {
-    const newContact = await Contact.create(req.body);
+    const newTask = await Task.create(req.body);
     
     res.status(201).json({
       status: 'success',
-      data: newContact
+      data: newTask
     });
   } catch (error) {
     res.status(400).json({
@@ -78,10 +79,10 @@ exports.createContact = async (req, res) => {
   }
 };
 
-// Update a contact
-exports.updateContact = async (req, res) => {
+// Update a task
+exports.updateTask = async (req, res) => {
   try {
-    const contact = await Contact.findByIdAndUpdate(
+    const task = await Task.findByIdAndUpdate(
       req.params.id,
       req.body,
       {
@@ -90,16 +91,16 @@ exports.updateContact = async (req, res) => {
       }
     );
     
-    if (!contact) {
+    if (!task) {
       return res.status(404).json({
         status: 'error',
-        message: 'Contato não encontrado'
+        message: 'Task not found'
       });
     }
     
     res.status(200).json({
       status: 'success',
-      data: contact
+      data: task
     });
   } catch (error) {
     res.status(400).json({
@@ -109,15 +110,15 @@ exports.updateContact = async (req, res) => {
   }
 };
 
-// Delete a contact
-exports.deleteContact = async (req, res) => {
+// Delete a task
+exports.deleteTask = async (req, res) => {
   try {
-    const contact = await Contact.findByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndDelete(req.params.id);
     
-    if (!contact) {
+    if (!task) {
       return res.status(404).json({
         status: 'error',
-        message: 'Contato não encontrado'
+        message: 'Task not found'
       });
     }
     

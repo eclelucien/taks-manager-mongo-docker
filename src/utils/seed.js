@@ -1,71 +1,75 @@
 const mongoose = require('mongoose');
-const Contact = require('../models/contactModel');
+const Task = require('../models/taskModel');
 require('dotenv').config();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/tasks-manager-db';
 
-// Dados iniciais para popular o banco
+// Initial data to populate the database
 const initialTasks = [
   {
-    name: 'João Silva',
-    phone: '31987654321',
-    email: 'joao@example.com',
-    address: 'Av. Brasil, 100',
-    notes: 'Contato de trabalho'
+    title: 'Complete Project Documentation',
+    description: 'Write comprehensive documentation for the new feature',
+    status: 'in_progress',
+    priority: 'high',
+    dueDate: new Date('2024-03-25'),
+    notes: 'Include API examples and usage scenarios'
   },
   {
-    name: 'Maria Oliveira',
-    phone: '31998765432',
-    email: 'maria@example.com',
-    address: 'Rua das Flores, 200',
-    notes: 'Contato de família'
+    title: 'Review Pull Requests',
+    description: 'Review and provide feedback on team members\' pull requests',
+    status: 'pending',
+    priority: 'medium',
+    dueDate: new Date('2024-03-20'),
+    notes: 'Focus on code quality and best practices'
   },
   {
-    name: 'Pedro Santos',
-    phone: '31999887766',
-    email: 'pedro@example.com',
-    address: 'Praça Central, 50',
-    notes: 'Contato de emergência'
+    title: 'Update Dependencies',
+    description: 'Update project dependencies to their latest stable versions',
+    status: 'completed',
+    priority: 'low',
+    dueDate: new Date('2024-03-15'),
+    notes: 'Test thoroughly after updates'
   },
   {
-    name: 'Ana Pereira',
-    phone: '31999998888',
-    email: 'ana@example.com',
-    address: 'Rua dos Pinheiros, 300',
-    notes: 'Contato pessoal'
+    title: 'Implement New Feature',
+    description: 'Add user authentication system',
+    status: 'pending',
+    priority: 'high',
+    dueDate: new Date('2024-03-30'),
+    notes: 'Include JWT implementation'
   }
 ];
 
-// Função para popular o banco de dados
+// Function to seed the database
 async function seedDatabase() {
   try {
-    // Conectar ao MongoDB
+    // Connect to MongoDB
     await mongoose.connect(MONGODB_URI);
-    console.log('Conectado ao MongoDB');
+    console.log('Connected to MongoDB');
 
-    // Limpar o banco de dados
-    await Contact.deleteMany({});
-    console.log('Dados anteriores removidos');
+    // Clear the database
+    await Task.deleteMany({});
+    console.log('Previous data removed');
 
-    // Inserir os dados iniciais
-    const tasks = await Contact.create(initialTasks);
-    console.log(`${tasks.length} contatos foram criados no banco de dados`);
+    // Insert initial data
+    const tasks = await Task.create(initialTasks);
+    console.log(`${tasks.length} tasks were created in the database`);
 
-    // Listar os contatos criados
-    tasks.forEach(contact => {
-      console.log(`- ${contact.name}: ${contact.phone}`);
+    // List created tasks
+    tasks.forEach(task => {
+      console.log(`- ${task.title}: ${task.status} (Priority: ${task.priority})`);
     });
 
-    console.log('Processo de seed concluído com sucesso!');
+    console.log('Seeding process completed successfully!');
   } catch (error) {
-    console.error('Erro ao popular o banco de dados:', error);
+    console.error('Error seeding the database:', error);
   } finally {
-    // Fechar a conexão com o MongoDB
+    // Close MongoDB connection
     await mongoose.connection.close();
-    console.log('Conexão com o MongoDB fechada');
+    console.log('MongoDB connection closed');
     process.exit(0);
   }
 }
 
-// Executar a função de seed
+// Execute the seed function
 seedDatabase(); 
