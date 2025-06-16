@@ -1,3 +1,5 @@
+import '../css/styles.css';
+
 document.addEventListener('DOMContentLoaded', () => {
   // Elementos DOM
   const tasksList = document.getElementById('tasksList');
@@ -47,22 +49,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Criar ou atualizar tarefa
   async function saveTask() {
     try {
+      // Show loading state
+      saveButton.disabled = true;
+      saveButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+      
       const taskId = document.getElementById('taskId').value;
       const isEditing = !!taskId;
       
+      // Get form values
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const status = document.getElementById('status').value;
+      const priority = document.getElementById('priority').value;
+      const dueDate = document.getElementById('dueDate').value;
+      const notes = document.getElementById('notes').value.trim();
+      
+      // Validate required fields
+      if (!title || !description) {
+        showAlert('Título e descrição são obrigatórios', 'danger');
+        return;
+      }
+      
       const taskData = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        status: document.getElementById('status').value,
-        priority: document.getElementById('priority').value,
-        dueDate: document.getElementById('dueDate').value,
-        notes: document.getElementById('notes').value
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate || null,
+        notes: notes || null
       };
       
-      // Validar dados obrigatórios
-      if (!taskData.title || !taskData.description) {
-        throw new Error('Título e descrição são obrigatórios');
-      }
+      console.log('Task data to save:', taskData);
       
       let url = '/api/tasks';
       let method = 'POST';
@@ -71,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         url += `/${taskId}`;
         method = 'PUT';
       }
+      
+      console.log('Sending request to:', url, 'with method:', method);
       
       const response = await fetch(url, {
         method,
@@ -81,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       const data = await response.json();
+      console.log('Response from server:', data);
       
       if (!response.ok) {
         throw new Error(data.message || `Erro ao ${isEditing ? 'atualizar' : 'criar'} tarefa`);
@@ -89,12 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fechar modal e limpar formulário
       taskModal.hide();
       taskForm.reset();
+      document.getElementById('taskId').value = ''; // Reset hidden ID field
       
       // Recarregar tarefas e mostrar mensagem de sucesso
       await loadTasks();
       showAlert(`Tarefa ${isEditing ? 'atualizada' : 'criada'} com sucesso!`, 'success');
+      
+      // Reset edit mode
+      editMode = false;
     } catch (error) {
-      showAlert(error.message, 'danger');
+      console.error('Error saving task:', error);
+      showAlert(error.message || 'Erro ao salvar tarefa. Por favor, tente novamente.', 'danger');
+    } finally {
+      // Reset button state
+      saveButton.disabled = false;
+      saveButton.innerHTML = 'Salvar';
     }
   }
   
@@ -239,6 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function showAlert(message, type = 'success') {
     alertText.textContent = message;
     alertMessage.className = `alert alert-${type} alert-dismissible fade show`;
+    alertMessage.classList.remove('d-none');
+    
+    // Scroll to alert
+    alertMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
     
     // Ocultar alerta automaticamente após 5 segundos
     setTimeout(() => {
@@ -308,7 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----- Event Listeners -----
   
   // Evento de salvar tarefa
-  saveButton.addEventListener('click', saveTask);
+  saveButton.addEventListener('click', async (e) => {
+    e.preventDefault();
+    console.log('Save button clicked');
+    await saveTask();
+  });
   
   // Evento de pesquisa
   searchButton.addEventListener('click', () => {
