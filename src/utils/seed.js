@@ -4,7 +4,6 @@ require('dotenv').config();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/tasks-manager-db';
 
-// Initial data to populate the database
 const initialTasks = [
   {
     title: 'Complete Project Documentation',
@@ -40,22 +39,17 @@ const initialTasks = [
   }
 ];
 
-// Function to seed the database
 async function seedDatabase() {
   try {
-    // Connect to MongoDB
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    // Clear the database
     await Task.deleteMany({});
     console.log('Previous data removed');
 
-    // Insert initial data
     const tasks = await Task.create(initialTasks);
     console.log(`${tasks.length} tasks were created in the database`);
 
-    // List created tasks
     tasks.forEach(task => {
       console.log(`- ${task.title}: ${task.status} (Priority: ${task.priority})`);
     });
@@ -64,12 +58,10 @@ async function seedDatabase() {
   } catch (error) {
     console.error('Error seeding the database:', error);
   } finally {
-    // Close MongoDB connection
     await mongoose.connection.close();
     console.log('MongoDB connection closed');
     process.exit(0);
   }
 }
 
-// Execute the seed function
 seedDatabase(); 
