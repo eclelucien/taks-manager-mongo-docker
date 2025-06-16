@@ -1,166 +1,145 @@
-# Task Manager - CRUD with Node.js, Express and MongoDB
+# Task Manager Application
 
-A complete task management application with CRUD operations (Create, Read, Update, Delete), built with Node.js, Express and MongoDB, including a responsive web interface.
+A modern task management application built with Node.js, Express, MongoDB, and Docker.
 
-## Features
+## 🚀 Technologies
 
-- RESTful API with Node.js and Express
-- MongoDB database for data storage
-- Responsive web interface with Bootstrap 5
-- Complete CRUD operations (Create, Read, Update, Delete)
-- Search tasks by title or description
-- Task status tracking (pending, in progress, completed)
-- Priority levels (low, medium, high)
-- Due date management
-- Docker for easy installation and execution
-- Responsive design that works on mobile and desktop devices
+### Backend
+- **Node.js**: JavaScript runtime environment
+- **Express**: Web framework for Node.js
+- **MongoDB**: NoSQL database for data storage
+- **Mongoose**: MongoDB object modeling tool
+- **dotenv**: Environment variable management
+- **CORS**: Cross-Origin Resource Sharing middleware
 
-## Project Structure
+### Frontend
+- **HTML5**: Latest version of HTML
+- **CSS3**: Latest version of CSS
+- **JavaScript**: Modern ES6+ features
+- **Bootstrap 5**: Frontend framework for responsive design
+- **Bootstrap Icons**: Icon library
+
+### Development Tools
+- **Docker**: Containerization platform
+- **Docker Compose**: Multi-container Docker application management
+- **Webpack**: Module bundler
+- **Babel**: JavaScript compiler
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+- **Jest**: Testing framework
+- **Nodemon**: Development server with auto-reload
+
+## 🛠️ Development Setup
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file with the following variables:
+   ```
+   PORT=3000
+   MONGODB_URI=mongodb://mongodb:27017/taskmanager
+   ```
+4. Start the development environment:
+   ```bash
+   docker compose up
+   ```
+
+## 📝 Available Scripts
+
+- `npm start`: Start the production server
+- `npm run dev`: Start the development server with nodemon
+- `npm run build`: Build the frontend assets for production
+- `npm run watch`: Watch for frontend changes during development
+- `npm test`: Run all tests
+- `npm run test:watch`: Run tests in watch mode
+- `npm run lint`: Run ESLint
+- `npm run lint:fix`: Fix ESLint issues
+- `npm run format`: Format code with Prettier
+
+## 🧪 Testing
+
+The project uses Jest for testing. Tests are organized in the `src/js/__tests__` directory:
+
+- `taskManager.test.js`: Tests for utility functions
+- `taskRenderer.test.js`: Tests for UI rendering
+- `taskApi.test.js`: Tests for API interactions
+
+Run tests with:
+```bash
+npm test
+```
+
+## 📦 Project Structure
 
 ```
 task-manager/
-├── config/
-├── public/                   # Web interface files
-│   ├── css/
-│   │   └── styles.css        # Custom styles
-│   ├── js/
-│   │   └── app.js            # Application JavaScript
-│   └── index.html            # Main page
 ├── src/
-│   ├── controllers/
-│   │   └── taskController.js
-│   ├── models/
-│   │   └── taskModel.js
-│   ├── routes/
-│   │   └── taskRoutes.js
-│   ├── utils/
-│   │   └── seed.js           # Database seeding utility
-│   └── server.js
-├── .dockerignore
-├── .env.example
-├── docker-compose.yml
-├── Dockerfile
+│   ├── js/
+│   │   ├── __tests__/
+│   │   │   ├── taskManager.test.js
+│   │   │   ├── taskRenderer.test.js
+│   │   │   └── taskApi.test.js
+│   │   └── app.js
+│   └── css/
+│       └── styles.css
+├── public/
+│   └── index.html
+├── server.js
 ├── package.json
-└── README.md
+├── webpack.config.js
+├── .eslintrc.js
+├── .prettierrc
+├── .env
+└── docker-compose.yml
 ```
 
-## Prerequisites
+## 🔧 Configuration Files
 
-- Docker and Docker Compose
+- `webpack.config.js`: Webpack configuration for frontend bundling
+- `.eslintrc.js`: ESLint configuration for code linting
+- `.prettierrc`: Prettier configuration for code formatting
+- `docker-compose.yml`: Docker Compose configuration for container orchestration
 
-## Installation and Execution
+## 📚 Dependencies
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd task-manager
-   ```
+### Production Dependencies
+- express: ^4.18.2
+- mongoose: ^7.5.0
+- cors: ^2.8.5
+- dotenv: ^16.3.1
 
-2. Create the .env file based on .env.example:
-   ```
-   cp .env.example .env
-   ```
+### Development Dependencies
+- @babel/core: ^7.22.15
+- @babel/preset-env: ^7.27.2
+- babel-jest: ^30.0.0
+- babel-loader: ^9.1.3
+- css-loader: ^6.8.1
+- eslint: ^8.47.0
+- eslint-config-prettier: ^9.0.0
+- eslint-plugin-prettier: ^5.0.0
+- jest: ^30.0.0
+- mini-css-extract-plugin: ^2.7.6
+- nodemon: ^3.0.1
+- prettier: ^3.0.2
+- style-loader: ^3.3.3
+- webpack: ^5.88.2
+- webpack-cli: ^5.1.4
 
-3. Run the application with Docker Compose:
-   ```
-   docker-compose up
-   ```
+## 🔐 Environment Variables
 
-   The application will be available at: http://localhost:3000
+- `PORT`: Server port (default: 3000)
+- `MONGODB_URI`: MongoDB connection string
 
-4. (Optional) Seed the database with initial data:
-   ```
-   docker-compose exec app npm run seed
-   ```
+## 🐳 Docker
 
-## Web Interface
+The application uses Docker for containerization:
 
-The application includes a complete web interface with:
+- **app**: Node.js application container
+- **mongodb**: MongoDB database container
+- **mongo-express**: Web-based MongoDB admin interface
 
-- Task list in table format
-- Form to add new tasks
-- Options to edit and delete tasks
-- Search field to filter tasks
-- Task status management
-- Priority level selection
-- Due date picker
-- User feedback messages
-- Responsive design (works on phones and desktops)
+## 📄 License
 
-## API Endpoints
-
-- `GET /api/tasks` - List all tasks
-  - Query Params:
-    - `search`: Search tasks by title or description
-
-- `GET /api/tasks/:id` - Get a specific task
-
-- `POST /api/tasks` - Create a new task
-  - Body:
-    ```json
-    {
-      "title": "Task Title",
-      "description": "Task Description",
-      "status": "pending",
-      "priority": "medium",
-      "dueDate": "2024-03-20",
-      "notes": "Additional notes about the task"
-    }
-    ```
-
-- `PUT /api/tasks/:id` - Update a task
-
-- `DELETE /api/tasks/:id` - Remove a task
-
-## API Usage Examples
-
-### Create a task
-
-```bash
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Complete Project Documentation",
-    "description": "Write comprehensive documentation for the new feature",
-    "status": "in_progress",
-    "priority": "high",
-    "dueDate": "2024-03-25",
-    "notes": "Include API examples"
-  }'
-```
-
-### Search tasks
-
-```bash
-curl -X GET "http://localhost:3000/api/tasks?search=documentation"
-```
-
-## Development
-
-For development without Docker:
-
-1. Install dependencies:
-   ```
-   npm install
-   ```
-
-2. Run the server in development mode:
-   ```
-   npm run dev
-   ```
-
-3. Seed the database with initial data:
-   ```
-   npm run seed
-   ```
-
-## Technologies Used
-
-- **Backend**: Node.js, Express.js, Mongoose
-- **Database**: MongoDB
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Containerization**: Docker, Docker Compose
-
-## License
-
-MIT 
+This project is licensed under the MIT License. 
