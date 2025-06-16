@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Elementos DOM
   const tasksList = document.getElementById('tasksList');
-  const contactCount = document.getElementById('contactCount');
-  const contactForm = document.getElementById('contactForm');
-  const saveButton = document.getElementById('saveContact');
+  const taskCount = document.getElementById('taskCount');
+  const taskForm = document.getElementById('taskForm');
+  const saveButton = document.getElementById('saveTask');
   const searchInput = document.getElementById('searchInput');
   const searchButton = document.getElementById('searchButton');
   const confirmDeleteButton = document.getElementById('confirmDelete');
@@ -11,17 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertText = document.getElementById('alertText');
   
   // Modais Bootstrap
-  const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+  const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
   const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
   
   // Estado da aplicação
   let currentTasks = [];
-  let contactToDeleteId = null;
+  let taskToDeleteId = null;
   let editMode = false; // Novo estado para controlar o modo de edição
   
   // ----- Funções CRUD e Auxiliares -----
   
-  // Carregar contatos
+  // Carregar tarefas
   async function loadTasks(searchTerm = '') {
     try {
       let url = '/api/tasks';
@@ -33,41 +33,42 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erro ao carregar contatos');
+        throw new Error(data.message || 'Erro ao carregar tarefas');
       }
       
       currentTasks = data.data;
       renderTasks(currentTasks);
-      updateContactCount(currentTasks.length);
+      updateTaskCount(currentTasks.length);
     } catch (error) {
       showAlert(error.message, 'danger');
     }
   }
   
-  // Criar ou atualizar contato
-  async function saveContact() {
+  // Criar ou atualizar tarefa
+  async function saveTask() {
     try {
-      const contactId = document.getElementById('contactId').value;
-      const isEditing = !!contactId;
+      const taskId = document.getElementById('taskId').value;
+      const isEditing = !!taskId;
       
-      const contactData = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        address: document.getElementById('address').value,
+      const taskData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        status: document.getElementById('status').value,
+        priority: document.getElementById('priority').value,
+        dueDate: document.getElementById('dueDate').value,
         notes: document.getElementById('notes').value
       };
       
       // Validar dados obrigatórios
-      if (!contactData.name || !contactData.phone) {
-        throw new Error('Nome e telefone são obrigatórios');
+      if (!taskData.title || !taskData.description) {
+        throw new Error('Título e descrição são obrigatórios');
       }
       
       let url = '/api/tasks';
       let method = 'POST';
       
       if (isEditing) {
-        url += `/${contactId}`;
+        url += `/${taskId}`;
         method = 'PUT';
       }
       
@@ -76,29 +77,29 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(contactData)
+        body: JSON.stringify(taskData)
       });
       
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || `Erro ao ${isEditing ? 'atualizar' : 'criar'} contato`);
+        throw new Error(data.message || `Erro ao ${isEditing ? 'atualizar' : 'criar'} tarefa`);
       }
       
       // Fechar modal e limpar formulário
-      contactModal.hide();
-      contactForm.reset();
+      taskModal.hide();
+      taskForm.reset();
       
-      // Recarregar contatos e mostrar mensagem de sucesso
+      // Recarregar tarefas e mostrar mensagem de sucesso
       await loadTasks();
-      showAlert(`Contato ${isEditing ? 'atualizado' : 'criado'} com sucesso!`, 'success');
+      showAlert(`Tarefa ${isEditing ? 'atualizada' : 'criada'} com sucesso!`, 'success');
     } catch (error) {
       showAlert(error.message, 'danger');
     }
   }
   
-  // Excluir contato
-  async function deleteContact(id) {
+  // Excluir tarefa
+  async function deleteTask(id) {
     try {
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'DELETE'
@@ -106,103 +107,113 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || 'Erro ao excluir contato');
+        throw new Error(data.message || 'Erro ao excluir tarefa');
       }
       
-      // Fechar modal, recarregar contatos e mostrar mensagem de sucesso
+      // Fechar modal, recarregar tarefas e mostrar mensagem de sucesso
       deleteModal.hide();
       await loadTasks();
-      showAlert('Contato excluído com sucesso!', 'success');
+      showAlert('Tarefa excluída com sucesso!', 'success');
     } catch (error) {
       showAlert(error.message, 'danger');
     }
   }
   
-  // Carregar um contato específico e abrir o modal de edição
-  async function loadAndEditContact(id) {
+  // Carregar uma tarefa específica e abrir o modal de edição
+  async function loadAndEditTask(id) {
     try {
       editMode = true; // Ativar modo de edição ANTES de abrir o modal
       const response = await fetch(`/api/tasks/${id}`);
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erro ao carregar contato');
+        throw new Error(data.message || 'Erro ao carregar tarefa');
       }
       
-      // Verificar estrutura da resposta e extrair o contato
+      // Verificar estrutura da resposta e extrair a tarefa
       console.log('Resposta da API:', data);
       
-      // A API retorna o contato dentro de data.data
-      const contact = data.data;
+      // A API retorna a tarefa dentro de data.data
+      const task = data.data;
       
-      // Verificar se os dados do contato foram recebidos corretamente
-      if (!contact) {
-        throw new Error('Dados do contato não encontrados na resposta');
+      // Verificar se os dados da tarefa foram recebidos corretamente
+      if (!task) {
+        throw new Error('Dados da tarefa não encontrados na resposta');
       }
       
       // Limpar formulário ANTES de preencher (para evitar resíduos)
-      document.getElementById('contactId').value = '';
+      document.getElementById('taskId').value = '';
       
       // Exibir o modal (modal é aberto antes de preencher)
-      contactModal.show();
+      taskModal.show();
       
       // Pequena pausa para garantir que o modal esteja totalmente aberto
       setTimeout(() => {
         // Preencher formulário com os dados
-        document.getElementById('contactId').value = contact._id;
-        document.getElementById('name').value = contact.name || '';
-        document.getElementById('phone').value = contact.phone || '';
-        document.getElementById('email').value = contact.email || '';
-        document.getElementById('address').value = contact.address || '';
-        document.getElementById('notes').value = contact.notes || '';
+        document.getElementById('taskId').value = task._id;
+        document.getElementById('title').value = task.title || '';
+        document.getElementById('description').value = task.description || '';
+        document.getElementById('status').value = task.status || 'pending';
+        document.getElementById('priority').value = task.priority || 'medium';
+        document.getElementById('dueDate').value = task.dueDate ? task.dueDate.substring(0, 10) : '';
+        document.getElementById('notes').value = task.notes || '';
         
         // Definir título do modal para modo de edição
-        document.getElementById('contactModalLabel').textContent = 'Editar Contato';
+        document.getElementById('taskModalLabel').textContent = 'Editar Tarefa';
         
         console.log('Formulário preenchido com:', {
-          id: document.getElementById('contactId').value,
-          name: document.getElementById('name').value,
-          phone: document.getElementById('phone').value,
-          email: document.getElementById('email').value
+          id: document.getElementById('taskId').value,
+          title: document.getElementById('title').value,
+          description: document.getElementById('description').value,
+          status: document.getElementById('status').value,
+          priority: document.getElementById('priority').value
         });
       }, 100);
       
     } catch (error) {
-      console.error('Erro ao editar contato:', error);
+      console.error('Erro ao editar tarefa:', error);
       showAlert(error.message, 'danger');
       editMode = false; // Resetar modo de edição em caso de erro
     }
   }
   
-  // Renderizar a lista de contatos
+  // Renderizar a lista de tarefas
   function renderTasks(tasks) {
     if (tasks.length === 0) {
       tasksList.innerHTML = `
         <tr>
-          <td colspan="5" class="text-center py-4">Nenhum contato encontrado</td>
+          <td colspan="6" class="text-center py-4">Nenhuma tarefa encontrada</td>
         </tr>
       `;
       return;
     }
     
-    tasksList.innerHTML = tasks.map(contact => `
+    tasksList.innerHTML = tasks.map(task => `
       <tr class="fade-in">
-        <td>${contact.name}</td>
-        <td>${contact.phone}</td>
-        <td>${contact.email || '-'}</td>
-        <td>${contact.address || '-'}</td>
-        <td class="contact-actions">
-          <button class="btn btn-action btn-edit" onclick="editContact('${contact._id}')" aria-label="Editar">
+        <td>${task.title || '-'}</td>
+        <td>${task.description || '-'}</td>
+        <td>
+          <span class="badge ${getStatusBadgeClass(task.status)}">
+            ${getStatusLabel(task.status)}
+          </span>
+        </td>
+        <td>
+          <span class="badge ${getPriorityBadgeClass(task.priority)}">
+            ${getPriorityLabel(task.priority)}
+          </span>
+        </td>
+        <td>${task.dueDate ? new Date(task.dueDate).toLocaleDateString('pt-BR') : '-'}</td>
+        <td class="task-actions">
+          <button class="btn btn-action btn-edit" onclick="editTask('${task._id}')" aria-label="Editar">
             <i class="bi bi-pencil-fill"></i>
           </button>
-          <button class="btn btn-action btn-delete" data-contact-id="${contact._id}" data-contact-name="${contact.name}" aria-label="Excluir">
+          <button class="btn btn-action btn-delete" data-task-id="${task._id}" data-task-title="${task.title}" aria-label="Excluir">
             <i class="bi bi-trash-fill"></i>
           </button>
         </td>
       </tr>
     `).join('');
     
-    // Adicionar event listeners aos botões de ação
     addActionButtonsListeners();
   }
   
@@ -211,17 +222,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botões de exclusão
     document.querySelectorAll('.btn-delete').forEach(button => {
       button.addEventListener('click', () => {
-        contactToDeleteId = button.getAttribute('data-contact-id');
-        const contactName = button.getAttribute('data-contact-name');
-        document.getElementById('deleteContactName').textContent = contactName;
+        taskToDeleteId = button.getAttribute('data-task-id');
+        const taskTitle = button.getAttribute('data-task-title');
+        document.getElementById('deleteTaskTitle').textContent = taskTitle;
         deleteModal.show();
       });
     });
   }
   
-  // Atualizar contador de contatos
-  function updateContactCount(count) {
-    contactCount.textContent = `${count} contato${count !== 1 ? 's' : ''}`;
+  // Atualizar contador de tarefas
+  function updateTaskCount(count) {
+    taskCount.textContent = `${count} tarefa${count === 1 ? '' : 's'}`;
   }
   
   // Exibir alerta
@@ -236,30 +247,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
   
-  // Limpar formulário e configurar para novo contato
+  // Limpar formulário e configurar para nova tarefa
   function resetForm() {
     // Limpar todos os campos de entrada
-    document.getElementById('contactId').value = '';
-    document.getElementById('name').value = '';
-    document.getElementById('phone').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('address').value = '';
+    document.getElementById('taskId').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('status').value = 'pending';
+    document.getElementById('priority').value = 'medium';
+    document.getElementById('dueDate').value = '';
     document.getElementById('notes').value = '';
     
-    // Configurar título do modal para novo contato
-    document.getElementById('contactModalLabel').textContent = 'Novo Contato';
+    // Configurar título do modal para nova tarefa
+    document.getElementById('taskModalLabel').textContent = 'Nova Tarefa';
   }
   
   // Função global para edição (para ser acessível pelo onclick)
-  window.editContact = function(id) {
-    console.log('Editando contato com ID:', id);
-    loadAndEditContact(id);
+  window.editTask = function(id) {
+    console.log('Editando tarefa com ID:', id);
+    loadAndEditTask(id);
   };
+  
+  // Funções auxiliares para formatação
+  function getStatusLabel(status) {
+    const labels = {
+      'pending': 'Pendente',
+      'in_progress': 'Em Andamento',
+      'completed': 'Concluída'
+    };
+    return labels[status] || status;
+  }
+
+  function getStatusBadgeClass(status) {
+    const classes = {
+      'pending': 'bg-warning',
+      'in_progress': 'bg-info',
+      'completed': 'bg-success'
+    };
+    return classes[status] || 'bg-secondary';
+  }
+
+  function getPriorityLabel(priority) {
+    const labels = {
+      'low': 'Baixa',
+      'medium': 'Média',
+      'high': 'Alta'
+    };
+    return labels[priority] || priority;
+  }
+
+  function getPriorityBadgeClass(priority) {
+    const classes = {
+      'low': 'bg-success',
+      'medium': 'bg-warning',
+      'high': 'bg-danger'
+    };
+    return classes[priority] || 'bg-secondary';
+  }
   
   // ----- Event Listeners -----
   
-  // Evento de salvar contato
-  saveButton.addEventListener('click', saveContact);
+  // Evento de salvar tarefa
+  saveButton.addEventListener('click', saveTask);
   
   // Evento de pesquisa
   searchButton.addEventListener('click', () => {
@@ -275,19 +324,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Evento para confirmar exclusão
   confirmDeleteButton.addEventListener('click', () => {
-    if (contactToDeleteId) {
-      deleteContact(contactToDeleteId);
+    if (taskToDeleteId) {
+      deleteTask(taskToDeleteId);
     }
   });
   
   // Evento para quando o modal é fechado
-  document.getElementById('contactModal').addEventListener('hidden.bs.modal', function () {
+  document.getElementById('taskModal').addEventListener('hidden.bs.modal', function () {
     // Resetar modo de edição
     editMode = false;
   });
   
-  // Eventos para modal de contato
-  document.getElementById('contactModal').addEventListener('show.bs.modal', function (event) {
+  // Eventos para modal de tarefa
+  document.getElementById('taskModal').addEventListener('show.bs.modal', function (event) {
     // Não resetar o formulário se estivermos em modo de edição
     if (!editMode) {
       resetForm();

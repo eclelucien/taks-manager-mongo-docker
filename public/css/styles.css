@@ -21,13 +21,12 @@ body {
 }
 
 .btn-action {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.25rem;
-  margin-right: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  margin: 0 0.2rem;
+}
+
+.btn-action i {
+  font-size: 1rem;
 }
 
 .btn-edit {
@@ -40,17 +39,51 @@ body {
   color: white;
 }
 
-.fade-in {
-  animation: fadeIn 0.5s;
+.badge {
+  font-weight: 500;
+  padding: 0.5em 0.8em;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.task-actions {
+  white-space: nowrap;
+  text-align: right;
 }
 
 .table-hover tbody tr:hover {
   background-color: rgba(0, 123, 255, 0.05);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Estilos para dispositivos móveis */
