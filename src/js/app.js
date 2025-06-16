@@ -49,14 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Criar ou atualizar tarefa
   async function saveTask() {
     try {
-      // Show loading state
       saveButton.disabled = true;
       saveButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
       
       const taskId = document.getElementById('taskId').value;
       const isEditing = !!taskId;
       
-      // Get form values
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
       const status = document.getElementById('status').value;
@@ -64,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const dueDate = document.getElementById('dueDate').value;
       const notes = document.getElementById('notes').value.trim();
       
-      // Validate required fields
       if (!title || !description) {
         showAlert('Título e descrição são obrigatórios', 'danger');
         return;
@@ -79,8 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         notes: notes || null
       };
       
-      console.log('Task data to save:', taskData);
-      
       let url = '/api/tasks';
       let method = 'POST';
       
@@ -88,8 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         url += `/${taskId}`;
         method = 'PUT';
       }
-      
-      console.log('Sending request to:', url, 'with method:', method);
       
       const response = await fetch(url, {
         method,
@@ -100,28 +93,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       const data = await response.json();
-      console.log('Response from server:', data);
       
       if (!response.ok) {
         throw new Error(data.message || `Erro ao ${isEditing ? 'atualizar' : 'criar'} tarefa`);
       }
       
-      // Fechar modal e limpar formulário
       taskModal.hide();
       taskForm.reset();
-      document.getElementById('taskId').value = ''; // Reset hidden ID field
+      document.getElementById('taskId').value = '';
       
-      // Recarregar tarefas e mostrar mensagem de sucesso
       await loadTasks();
       showAlert(`Tarefa ${isEditing ? 'atualizada' : 'criada'} com sucesso!`, 'success');
       
-      // Reset edit mode
       editMode = false;
     } catch (error) {
-      console.error('Error saving task:', error);
       showAlert(error.message || 'Erro ao salvar tarefa. Por favor, tente novamente.', 'danger');
     } finally {
-      // Reset button state
       saveButton.disabled = false;
       saveButton.innerHTML = 'Salvar';
     }
@@ -151,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Carregar uma tarefa específica e abrir o modal de edição
   async function loadAndEditTask(id) {
     try {
-      editMode = true; // Ativar modo de edição ANTES de abrir o modal
+      editMode = true;
       const response = await fetch(`/api/tasks/${id}`);
       const data = await response.json();
       
@@ -159,26 +146,16 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || 'Erro ao carregar tarefa');
       }
       
-      // Verificar estrutura da resposta e extrair a tarefa
-      console.log('Resposta da API:', data);
-      
-      // A API retorna a tarefa dentro de data.data
       const task = data.data;
       
-      // Verificar se os dados da tarefa foram recebidos corretamente
       if (!task) {
         throw new Error('Dados da tarefa não encontrados na resposta');
       }
       
-      // Limpar formulário ANTES de preencher (para evitar resíduos)
       document.getElementById('taskId').value = '';
-      
-      // Exibir o modal (modal é aberto antes de preencher)
       taskModal.show();
       
-      // Pequena pausa para garantir que o modal esteja totalmente aberto
       setTimeout(() => {
-        // Preencher formulário com os dados
         document.getElementById('taskId').value = task._id;
         document.getElementById('title').value = task.title || '';
         document.getElementById('description').value = task.description || '';
@@ -186,23 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('priority').value = task.priority || 'medium';
         document.getElementById('dueDate').value = task.dueDate ? task.dueDate.substring(0, 10) : '';
         document.getElementById('notes').value = task.notes || '';
-        
-        // Definir título do modal para modo de edição
         document.getElementById('taskModalLabel').textContent = 'Editar Tarefa';
-        
-        console.log('Formulário preenchido com:', {
-          id: document.getElementById('taskId').value,
-          title: document.getElementById('title').value,
-          description: document.getElementById('description').value,
-          status: document.getElementById('status').value,
-          priority: document.getElementById('priority').value
-        });
       }, 100);
       
     } catch (error) {
-      console.error('Erro ao editar tarefa:', error);
       showAlert(error.message, 'danger');
-      editMode = false; // Resetar modo de edição em caso de erro
+      editMode = false;
     }
   }
   
@@ -343,7 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Evento de salvar tarefa
   saveButton.addEventListener('click', async (e) => {
     e.preventDefault();
-    console.log('Save button clicked');
     await saveTask();
   });
   
@@ -368,13 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Evento para quando o modal é fechado
   document.getElementById('taskModal').addEventListener('hidden.bs.modal', function () {
-    // Resetar modo de edição
     editMode = false;
   });
   
   // Eventos para modal de tarefa
   document.getElementById('taskModal').addEventListener('show.bs.modal', function (event) {
-    // Não resetar o formulário se estivermos em modo de edição
     if (!editMode) {
       resetForm();
     }
